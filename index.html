@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+ <head>
+    <title>LTI Login</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.1/css/bootstrap.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+
+<style>
+    .form1 {
+    
+    display: inline-block;
+    padding: 20px; 
+    border: 3px solid #bbbbbb; 
+    border-radius: 5px;
+    left: 40%;
+    top: 25%;
+    position:absolute;
+}
+
+.buton {
+    
+    display: inline-block;
+    left: 40%;
+    top: 30%;
+    position:absolute;
+}
+ 
+</style>    
+
+<script>
+   
+    function setCookie(cname,cvalue,exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    var expires = "expires="+ d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";"+ expires + ";path=/";
+}
+
+function getCookie(cname) {
+  var name = cname + "=";
+  var decodedCookie = decodeURIComponent(document.cookie);
+  var ca = decodedCookie.split(';');
+  for(var i = 0; i <ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+
+
+function checkCookie() {
+  var username = getCookie("uname");
+  var password = getCookie("pass")
+  if (username != "" && password!="") {
+      var duname = CryptoJS.AES.decrypt(username,"123");
+      var dpass = CryptoJS.AES.decrypt(password,"123");
+    document.getElementById("uname").value=duname.toString(CryptoJS.enc.Utf8);
+   document.getElementById("pass").value=dpass.toString(CryptoJS.enc.Utf8);
+  } else {
+
+    if (username != "" && username != null && password != "" && password != null ) {
+    validate(form);
+    }
+  }
+}
+
+</script>
+
+
+</head>
+
+
+<body onload="checkCookie()">
+
+     <form class="form1" name="form" method="post">
+        <div id="message" style="color: red;padding-bottom: 1rem;" >Invalid Username/Password.Please try again!</div>
+	        <label >Username</label>
+            <input  type="text" name="uname" id="uname" /><br/>
+            <label >Password</label>&nbsp; 
+            <input type="password" name="pass" id="pass"/><br/>
+            <label>
+                <input type="checkbox" checked="checked" name="remember" id="remember"> Remember me
+              </label>
+            <input type="button" class="btn btn-success btn-block" value="Login" onclick="validate(this.form)">
+            
+        </form>
+            <script type="text/javascript">
+                var x = document.getElementById("message");
+                x.style.display = "none";
+
+                function validate(form)
+                {console.log(CryptoJS.AES.encrypt(form.uname.value, "123"));
+
+                 if(form.uname.value == "LTI" && form.pass.value == "123")
+                  { 
+                    if(document.getElementById('remember').checked)
+                    { 
+                        
+                        var epass= CryptoJS.AES.encrypt(form.pass.value, "123");
+                    //   setCookie('uname',euname.toString(),1);
+                      setCookie('pass',epass.toString(),1);
+                    }
+                    var euname = CryptoJS.AES.encrypt(form.uname.value, "123");
+                    setCookie('uname',euname.toString(),1);
+                    window.location.href = "/welcome.html";
+                  }
+                 else
+                 {
+                    x.style.display = "block";
+
+                  }
+                }     
+            </script>    
+            
+   </body>
+</html> 
+
